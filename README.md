@@ -1,5 +1,7 @@
 # oxiviz
 
+![oxiviz rendering four different songs](docs/demo.gif)
+
 An offline music visualizer that renders audio files to video. Its look is inspired by **Alchemy**, the classic
 Windows Media Player visualization: a feedback warp that smears and swirls the previous frame, with beat-reactive
 overlays drawn on top.
