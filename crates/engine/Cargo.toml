@@ -1,0 +1,13 @@
+[package]
+name = "oxiviz-engine"
+description = "Turns per-frame audio data into visualizer frames. No I/O."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+rayon.workspace = true
+
+[lints]
+workspace = true

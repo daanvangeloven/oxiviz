@@ -1,0 +1,17 @@
+/* Rust-orange accent, to go with the name. */
+:root {
+	--sl-color-accent-low: #3a1a0c;
+	--sl-color-accent: #d9622b;
+	--sl-color-accent-high: #ffc6a8;
+}
+:root[data-theme='light'] {
+	--sl-color-accent-low: #ffe1d0;
+	--sl-color-accent: #b4491a;
+	--sl-color-accent-high: #4a1c08;
+}
+.hero h1 {
+	background: linear-gradient(90deg, #ff9a5a, #d9622b 40%, #8a3dd9);
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
+}

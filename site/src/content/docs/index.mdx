@@ -1,0 +1,43 @@
+---
+title: oxiviz
+description: An offline music visualizer that renders audio files to video.
+template: splash
+hero:
+  tagline: Turn any song into a hypnotic, beat-reactive music video. Offline, headless and reproducible.
+  actions:
+    - text: Get started
+      link: /introduction/
+      icon: right-arrow
+    - text: How it works
+      link: /concepts/how-it-works/
+      variant: minimal
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+import Showcase from '../../components/Showcase.astro';
+
+## Showcase
+
+Every clip below is a 45-second excerpt rendered by oxiviz straight from the audio, with no manual editing. Unmute a clip to hear the music it reacts to.
+
+<Showcase />
+
+## Why oxiviz
+
+<CardGrid>
+	<Card title="Feedback warps" icon="star">
+		Each frame is warped from the last one, so shapes smear, swirl and fold into kaleidoscopes instead of
+		just bouncing to the beat.
+	</Card>
+	<Card title="Always different" icon="random">
+		A scheduler keeps swapping warps and overlays, each with freshly randomized settings. A long track never
+		settles into a loop.
+	</Card>
+	<Card title="Reproducible" icon="approve-check">
+		All randomness comes from one seed. The same audio, seed and settings always render the same video.
+	</Card>
+	<Card title="Headless" icon="laptop">
+		It renders on the CPU with no GPU or display, so it runs fine on servers and in containers. ffmpeg handles
+		decoding and encoding.
+	</Card>
+</CardGrid>

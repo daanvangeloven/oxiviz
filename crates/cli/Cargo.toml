@@ -1,0 +1,16 @@
+[package]
+name = "oxiviz"
+description = "Renders music visualizer videos."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+oxiviz-engine.workspace = true
+oxiviz-audio.workspace = true
+anyhow.workspace = true
+clap.workspace = true
+
+[lints]
+workspace = true

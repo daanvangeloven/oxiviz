@@ -1,0 +1,32 @@
+# Rust build output
+/target
+
+# Audio and video: test songs and renders. The site's showcase clips are the exception.
+*.mp3
+*.wav
+*.flac
+*.ogg
+*.m4a
+*.aac
+*.opus
+*.mp4
+*.mkv
+*.mov
+*.webm
+!/site/public/showcase/*
+
+# Environment and secrets
+.env
+.env.*
+
+# Logs and temp files
+*.log
+*.tmp
+
+# Editors and OS
+.vscode/
+.idea/
+*.swp
+*~
+.DS_Store
+Thumbs.db

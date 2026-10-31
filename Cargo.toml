@@ -1,0 +1,31 @@
+[workspace]
+resolver = "3"
+members = ["crates/*"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+rust-version = "1.85"
+
+[workspace.dependencies]
+oxiviz-engine = { path = "crates/engine" }
+oxiviz-audio = { path = "crates/audio" }
+anyhow = "1"
+clap = { version = "4", features = ["derive"] }
+rayon = "1"
+rustfft = "6"
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+
+[workspace.lints.clippy]
+all = { level = "warn", priority = -1 }
+
+# Rendering unoptimized is too slow to try anything out.
+[profile.dev]
+opt-level = 1
+
+[profile.release]
+lto = "thin"
+codegen-units = 1

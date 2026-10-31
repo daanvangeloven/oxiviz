@@ -1,0 +1,206 @@
+---
+// Pre-rendered showcase clips. Render them with the CLI and drop the files into
+// `public/showcase/`. A clip without a video file shows an animated placeholder.
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
+
+interface Clip {
+	/** Base file name in public/showcase/, without extension: expects `<file>.mp4` and optionally `<file>.jpg`. */
+	file: string;
+	title: string;
+	description: string;
+	/** Seed the clip was rendered with, shown so visitors can reproduce it. */
+	seed?: number;
+	/** Music attribution, shown under the clip. */
+	credit?: { text: string; href: string; license: string; licenseHref: string };
+}
+
+const macleod = (title: string) => ({
+	text: `"${title}" by Kevin MacLeod (incompetech.com)`,
+	href: 'https://incompetech.com',
+	license: 'CC BY 4.0',
+	licenseHref: 'https://creativecommons.org/licenses/by/4.0/',
+});
+
+const clips: Clip[] = [
+	{
+		file: 'raving-energy',
+		title: 'Raving Energy',
+		description: 'A kaleidoscope warp folds everything into mirrored tiles while the waves spin through it.',
+		seed: 11,
+		credit: macleod('Raving Energy'),
+	},
+	{
+		file: 'show-your-moves',
+		title: 'Show Your Moves',
+		description: 'Bright, mirrored color fields with waveform lines snapping to the beat.',
+		seed: 22,
+		credit: macleod('Show Your Moves'),
+	},
+	{
+		file: 'voxel-revolution',
+		title: 'Voxel Revolution',
+		description: 'Swirls pull the waveforms into flowing ribbons of color.',
+		seed: 33,
+		credit: macleod('Voxel Revolution'),
+	},
+	{
+		file: 'aerosol-of-my-love',
+		title: 'Aerosol of my Love',
+		description: 'Glowing atom balls and waves leave long trails across a dark background.',
+		seed: 44,
+		credit: macleod('Aerosol of my Love'),
+	},
+];
+
+const publicDir = join(process.cwd(), 'public', 'showcase');
+const withMedia = clips.map((clip) => ({
+	...clip,
+	video: existsSync(join(publicDir, `${clip.file}.mp4`)) ? `/showcase/${clip.file}.mp4` : undefined,
+	poster: existsSync(join(publicDir, `${clip.file}.jpg`)) ? `/showcase/${clip.file}.jpg` : undefined,
+}));
+---
+
+<div class="showcase not-content">
+	{
+		withMedia.map((clip, i) => (
+			<figure class="clip">
+				{clip.video ? (
+					<video
+						src={clip.video}
+						poster={clip.poster}
+						muted
+						loop
+						playsinline
+						controls
+						preload="none"
+					/>
+				) : (
+					<div class="placeholder" style={`--hue: ${(i * 70 + 20) % 360}`} role="img" aria-label={`${clip.title}: render coming soon`}>
+						<span>Render coming soon</span>
+					</div>
+				)}
+				<figcaption>
+					<strong>{clip.title}</strong>
+					{clip.seed !== undefined && <code class="seed">--seed {clip.seed}</code>}
+					<p>{clip.description}</p>
+					{clip.credit && (
+						<p class="credit">
+							Music: <a href={clip.credit.href}>{clip.credit.text}</a>
+						</p>
+					)}
+				</figcaption>
+			</figure>
+		))
+	}
+</div>
+
+<script>
+	// Play clips (muted) only while they're on screen, so the page doesn't download every video up front.
+	// Once a visitor interacts with a clip's controls, leave it alone.
+	const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+	const touched = new WeakSet<HTMLVideoElement>();
+	const observer = new IntersectionObserver(
+		(entries) => {
+			for (const entry of entries) {
+				const video = entry.target as HTMLVideoElement;
+				if (touched.has(video)) continue;
+				if (entry.isIntersecting) video.play().catch(() => {});
+				else video.pause();
+			}
+		},
+		{ threshold: 0.5 },
+	);
+	for (const video of document.querySelectorAll<HTMLVideoElement>('.showcase video')) {
+		video.addEventListener('volumechange', () => touched.add(video));
+		video.addEventListener('seeking', () => touched.add(video));
+		if (!reduceMotion) observer.observe(video);
+	}
+</script>
+
+<style>
+	.showcase {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+		gap: 1.5rem;
+		margin-block: 2rem;
+	}
+	.clip {
+		margin: 0;
+		border: 1px solid var(--sl-color-gray-5);
+		border-radius: 0.75rem;
+		overflow: hidden;
+		background: var(--sl-color-black);
+	}
+	video,
+	.placeholder {
+		display: block;
+		width: 100%;
+		aspect-ratio: 16 / 9;
+		background: #000;
+	}
+	.placeholder {
+		position: relative;
+		display: grid;
+		place-items: center;
+		overflow: hidden;
+	}
+	.placeholder::before {
+		content: '';
+		position: absolute;
+		inset: -50%;
+		background: conic-gradient(
+			from 0deg,
+			hsl(var(--hue) 90% 55%),
+			hsl(calc(var(--hue) + 60) 90% 45%),
+			#000,
+			hsl(calc(var(--hue) + 140) 90% 50%),
+			#000,
+			hsl(var(--hue) 90% 55%)
+		);
+		filter: blur(28px);
+		animation: spin 14s linear infinite;
+		opacity: 0.7;
+	}
+	.placeholder span {
+		position: relative;
+		padding: 0.25rem 0.75rem;
+		border-radius: 999px;
+		background: rgb(0 0 0 / 0.55);
+		color: #fff;
+		font-size: var(--sl-text-sm);
+	}
+	figcaption {
+		padding: 0.9rem 1.1rem 1.1rem;
+	}
+	figcaption strong {
+		color: var(--sl-color-white);
+		font-size: var(--sl-text-lg);
+	}
+	.seed {
+		margin-inline-start: 0.5rem;
+		font-size: var(--sl-text-xs);
+	}
+	figcaption p {
+		margin: 0.35rem 0 0;
+		color: var(--sl-color-gray-2);
+		font-size: var(--sl-text-sm);
+	}
+	.credit {
+		font-size: var(--sl-text-xs) !important;
+		color: var(--sl-color-gray-3) !important;
+	}
+	.credit a {
+		color: inherit;
+	}
+	@keyframes spin {
+		to {
+			transform: rotate(1turn);
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.placeholder::before {
+			animation: none;
+		}
+	}
+</style>
